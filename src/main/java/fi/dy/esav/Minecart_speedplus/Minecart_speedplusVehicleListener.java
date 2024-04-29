@@ -73,7 +73,7 @@ public class Minecart_speedplusVehicleListener implements Listener {
 
 		double travelled = to.toVector().distance(from.toVector());
 		if (travelled > 1) {
-			plugin.getLogger().warning(String.format("Moved more than 1 block since last time (%d)", travelled));
+			plugin.getLogger().warning(String.format("Moved more than 1 block since last time (%f)", travelled));
 		}
 
 		Minecart cart = (Minecart) event.getVehicle();
