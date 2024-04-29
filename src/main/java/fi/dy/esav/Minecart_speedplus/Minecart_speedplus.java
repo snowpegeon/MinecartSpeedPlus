@@ -1,6 +1,5 @@
 package fi.dy.esav.Minecart_speedplus;
 
-import java.util.logging.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -10,7 +9,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Minecart_speedplus extends JavaPlugin {
-	Logger log = Logger.getLogger("Minecraft");
 
 	private final Minecart_speedplusVehicleListener VehicleListener = new Minecart_speedplusVehicleListener(this);
 
@@ -35,14 +33,14 @@ public class Minecart_speedplus extends JavaPlugin {
 	}
 
 	public void onEnable() {
-		this.log.info(getDescription().getName() + " version " + getDescription().getVersion() + " started.");
+		getLogger().info(getPluginMeta().getDisplayName() + " started.");
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(this.VehicleListener, (Plugin)this);
 		pm.registerEvents(this.SignListener, (Plugin)this);
 	}
 
 	public void onDisable() {
-		this.log.info(getDescription().getName() + " version " + getDescription().getVersion() + " stopped.");
+		getLogger().info(getPluginMeta().getDisplayName() + " stopped.");
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
