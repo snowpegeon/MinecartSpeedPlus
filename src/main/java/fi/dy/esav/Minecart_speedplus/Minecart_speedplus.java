@@ -16,7 +16,7 @@ public class Minecart_speedplus extends JavaPlugin {
 
 	private final Minecart_speedplusSignListener SignListener = new Minecart_speedplusSignListener(this);
 
-	static double speedmultiplier = 1.25D;
+	static double speedmultiplier = 1D;
 
 	boolean result;
 

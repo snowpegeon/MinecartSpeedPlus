@@ -49,7 +49,7 @@ public class Minecart_speedplusVehicleListener implements Listener {
 		if (event.getVehicle() instanceof Minecart) {
 
 			Minecart cart = (Minecart) event.getVehicle();
-			cart.setMaxSpeed(0.4 * Minecart_speedplus.getSpeedMultiplier());
+			cart.setMaxSpeed(0.4D * Minecart_speedplus.getSpeedMultiplier());
 
 		}
 	}
