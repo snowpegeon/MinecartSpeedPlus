@@ -2,6 +2,7 @@ package fi.dy.esav.Minecart_speedplus;
 
 import java.util.logging.Logger;
 import org.bukkit.Tag;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -55,75 +56,86 @@ public class Minecart_speedplusVehicleListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onVehicleMove(VehicleMoveEvent event) {
+		if (!(event.getVehicle() instanceof Minecart)) {
+			// Not a Minecart
+			return;
+		}
 
-		if (event.getVehicle() instanceof Minecart) {
+		final Location from = event.getFrom();
+		final Location to = event.getTo();
+		final Location fromBlock = from.toBlockLocation();
+		final Location toBlock = to.toBlockLocation();
 
-			Minecart cart = (Minecart) event.getVehicle();
-			for (int xmod : xmodifier) {
-				for (int ymod : ymodifier) {
-					for (int zmod : zmodifier) {
+		if (fromBlock.equals(toBlock)) {
+			// We didn't move to a new block
+			return;
+		}
 
-						cartx = cart.getLocation().getBlockX();
-						carty = cart.getLocation().getBlockY();
-						cartz = cart.getLocation().getBlockZ();
-						blockx = cartx + xmod;
-						blocky = carty + ymod;
-						blockz = cartz + zmod;
-						block = cart.getWorld().getBlockAt(blockx, blocky,
-						                                   blockz);
-						Material mat = cart.getWorld().getBlockAt(blockx, blocky, blockz).getType();
+		Minecart cart = (Minecart) event.getVehicle();
+		for (int xmod : xmodifier) {
+			for (int ymod : ymodifier) {
+				for (int zmod : zmodifier) {
 
-						if (this.isSign(mat)) {
-							Sign sign = (Sign) block.getState();
-							String[] text = sign.getLines();
+					cartx = cart.getLocation().getBlockX();
+					carty = cart.getLocation().getBlockY();
+					cartz = cart.getLocation().getBlockZ();
+					blockx = cartx + xmod;
+					blocky = carty + ymod;
+					blockz = cartz + zmod;
+					block = cart.getWorld().getBlockAt(blockx, blocky,
+							blockz);
+					Material mat = cart.getWorld().getBlockAt(blockx, blocky, blockz).getType();
 
-							if (text[0].equalsIgnoreCase("[msp]")) {
+					if (this.isSign(mat)) {
+						Sign sign = (Sign) block.getState();
+						String[] text = sign.getLines();
 
-								if (text[1].equalsIgnoreCase("fly")) {
-									cart.setFlyingVelocityMod(flyingmod);
+						if (text[0].equalsIgnoreCase("[msp]")) {
 
-								} else if (text[1].equalsIgnoreCase("nofly")) {
+							if (text[1].equalsIgnoreCase("fly")) {
+								cart.setFlyingVelocityMod(flyingmod);
 
-									cart.setFlyingVelocityMod(noflyingmod);
+							} else if (text[1].equalsIgnoreCase("nofly")) {
 
-								} else {
+								cart.setFlyingVelocityMod(noflyingmod);
 
-									error = false;
-									try {
+							} else {
 
-										line1 = Double.parseDouble(text[1]);
+								error = false;
+								try {
 
-									} catch (Exception e) {
+									line1 = Double.parseDouble(text[1]);
+
+								} catch (Exception e) {
+
+									sign.setLine(2, "  ERROR");
+									sign.setLine(3, "WRONG VALUE");
+									sign.update();
+									error = true;
+
+								}
+								if (!error) {
+
+									if (0 < line1 & line1 <= 50) {
+
+										cart.setMaxSpeed(0.4D * Double.parseDouble(text[1]));
+
+									} else {
 
 										sign.setLine(2, "  ERROR");
 										sign.setLine(3, "WRONG VALUE");
 										sign.update();
-										error = true;
-
-									}
-									if (!error) {
-
-										if (0 < line1 & line1 <= 50) {
-
-											cart.setMaxSpeed(0.4D * Double.parseDouble(text[1]));
-
-										} else {
-
-											sign.setLine(2, "  ERROR");
-											sign.setLine(3, "WRONG VALUE");
-											sign.update();
-										}
 									}
 								}
 							}
-
 						}
 
 					}
+
 				}
 			}
-
 		}
+
 	}
 
 }
