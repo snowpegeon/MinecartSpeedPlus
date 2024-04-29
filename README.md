@@ -1,8 +1,8 @@
 Native Minecraft Version: 1.13<br>
-Tested Minecraft Versions: 1.131.141.151.161.17<br>
+Tested Minecraft Versions: 1.13, 1.14, 1.15, 1.16, 1.17<br>
 Contributors: Authors: varesa - Origional Author | rmellis - Update Author<br>
 Languages Supported: English<br>
-Donate:https://www.paypal.me/rmellis360 <br>
+Donate: https://www.paypal.me/rmellis360 <br>
 Spigot: https://www.spigotmc.org/resources/minecart-speed-plus.69639/  <br>
 Polymart: https://polymart.org/resource/minecart-speed-plus.854 <br>
 ![image](https://user-images.githubusercontent.com/41447552/122661160-4692a700-d17f-11eb-8335-2e2eb2ecaa51.png)
