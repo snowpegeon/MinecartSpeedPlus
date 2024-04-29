@@ -71,22 +71,26 @@ public class Minecart_speedplusVehicleListener implements Listener {
 			return;
 		}
 
+		double travelled = to.toVector().distance(from.toVector());
+		if (travelled > 1) {
+			plugin.getLogger().warning(String.format("Moved more than 1 block since last time (%d)", travelled));
+		}
+
 		Minecart cart = (Minecart) event.getVehicle();
 		for (int xmod : xmodifier) {
 			for (int ymod : ymodifier) {
 				for (int zmod : zmodifier) {
 
-					cartx = cart.getLocation().getBlockX();
-					carty = cart.getLocation().getBlockY();
-					cartz = cart.getLocation().getBlockZ();
+					cartx = toBlock.getBlockX();
+					carty = toBlock.getBlockY();
+					cartz = toBlock.getBlockZ();
 					blockx = cartx + xmod;
 					blocky = carty + ymod;
 					blockz = cartz + zmod;
-					block = cart.getWorld().getBlockAt(blockx, blocky,
-							blockz);
+					block = cart.getWorld().getBlockAt(blockx, blocky, blockz);
 					Material mat = cart.getWorld().getBlockAt(blockx, blocky, blockz).getType();
 
-					if (this.isSign(mat)) {
+					if (Minecart_speedplusVehicleListener.isSign(mat)) {
 						Sign sign = (Sign) block.getState();
 						String[] text = sign.getLines();
 
