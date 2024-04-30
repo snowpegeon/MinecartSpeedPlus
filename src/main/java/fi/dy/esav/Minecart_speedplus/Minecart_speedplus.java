@@ -1,6 +1,7 @@
 package fi.dy.esav.Minecart_speedplus;
 
 import org.bukkit.ChatColor;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,6 +14,9 @@ public class Minecart_speedplus extends JavaPlugin {
 	private final Minecart_speedplusVehicleListener VehicleListener = new Minecart_speedplusVehicleListener(this);
 
 	private final Minecart_speedplusSignListener SignListener = new Minecart_speedplusSignListener(this);
+
+	final NamespacedKey key_fly = new NamespacedKey(this, "fly");
+	final NamespacedKey key_speed = new NamespacedKey(this, "speed");
 
 	static double speedmultiplier = 1D;
 

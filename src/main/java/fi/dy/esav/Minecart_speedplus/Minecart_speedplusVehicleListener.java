@@ -12,14 +12,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleCreateEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 
 public class Minecart_speedplusVehicleListener implements Listener {
-
-	public static boolean isSign(Material m) {
-		return Tag.SIGNS.isTagged(m);
-	}
-
 	int[] xmodifier = { -1, 0, 1 };
 	int[] ymodifier = { -2, -1, 0, 1, 2 };
 	int[] zmodifier = { -1, 0, 1 };
@@ -71,75 +67,37 @@ public class Minecart_speedplusVehicleListener implements Listener {
 			return;
 		}
 
-		double travelled = to.toVector().distance(from.toVector());
+		final double travelled = to.toVector().distance(from.toVector());
 		if (travelled > 1) {
 			plugin.getLogger().warning(String.format("Moved more than 1 block since last time (%f)", travelled));
 		}
 
-		Minecart cart = (Minecart) event.getVehicle();
+		final Minecart cart = (Minecart) event.getVehicle();
+		final int cartx = toBlock.getBlockX();
+		final int carty = toBlock.getBlockY();
+		final int cartz = toBlock.getBlockZ();
 		for (int xmod : xmodifier) {
 			for (int ymod : ymodifier) {
 				for (int zmod : zmodifier) {
+					final Block block = cart.getWorld().getBlockAt(cartx + xmod, carty + ymod, cartz + zmod);
 
-					cartx = toBlock.getBlockX();
-					carty = toBlock.getBlockY();
-					cartz = toBlock.getBlockZ();
-					blockx = cartx + xmod;
-					blocky = carty + ymod;
-					blockz = cartz + zmod;
-					block = cart.getWorld().getBlockAt(blockx, blocky, blockz);
-					Material mat = cart.getWorld().getBlockAt(blockx, blocky, blockz).getType();
-
-					if (Minecart_speedplusVehicleListener.isSign(mat)) {
-						Sign sign = (Sign) block.getState();
-						String[] text = sign.getLines();
-
-						if (text[0].equalsIgnoreCase("[msp]")) {
-
-							if (text[1].equalsIgnoreCase("fly")) {
+					if (block.getState() instanceof Sign sign) {
+						if (sign.getPersistentDataContainer().has(plugin.key_speed, PersistentDataType.DOUBLE)) {
+							double speed = sign.getPersistentDataContainer().get(plugin.key_speed,
+									PersistentDataType.DOUBLE);
+							cart.setMaxSpeed(0.4D * speed);
+						} else if (sign.getPersistentDataContainer().has(plugin.key_fly, PersistentDataType.BOOLEAN)) {
+							Boolean fly = sign.getPersistentDataContainer().get(plugin.key_fly,
+									PersistentDataType.BOOLEAN);
+							if (fly) {
 								cart.setFlyingVelocityMod(flyingmod);
-
-							} else if (text[1].equalsIgnoreCase("nofly")) {
-
-								cart.setFlyingVelocityMod(noflyingmod);
-
 							} else {
-
-								error = false;
-								try {
-
-									line1 = Double.parseDouble(text[1]);
-
-								} catch (Exception e) {
-
-									sign.setLine(2, "  ERROR");
-									sign.setLine(3, "WRONG VALUE");
-									sign.update();
-									error = true;
-
-								}
-								if (!error) {
-
-									if (0 < line1 & line1 <= 50) {
-
-										cart.setMaxSpeed(0.4D * Double.parseDouble(text[1]));
-
-									} else {
-
-										sign.setLine(2, "  ERROR");
-										sign.setLine(3, "WRONG VALUE");
-										sign.update();
-									}
-								}
+								cart.setFlyingVelocityMod(noflyingmod);
 							}
 						}
-
 					}
-
 				}
 			}
 		}
-
 	}
-
 }
