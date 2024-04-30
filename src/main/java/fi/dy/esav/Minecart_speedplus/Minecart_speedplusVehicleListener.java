@@ -1,9 +1,6 @@
 package fi.dy.esav.Minecart_speedplus;
 
-import java.util.logging.Logger;
-import org.bukkit.Tag;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Minecart;
@@ -13,26 +10,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleCreateEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 public class Minecart_speedplusVehicleListener implements Listener {
-	int[] xmodifier = { -1, 0, 1 };
-	int[] ymodifier = { -2, -1, 0, 1, 2 };
-	int[] zmodifier = { -1, 0, 1 };
-
-	int cartx, carty, cartz;
-	int blockx, blocky, blockz;
 
 	Block block;
-	int blockid;
-
-	double line1;
 
 	public static Minecart_speedplus plugin;
-	Logger log = Logger.getLogger("Minecraft");
-
-	boolean error;
 
 	Vector flyingmod = new Vector(10, 0.01, 10);
 	Vector noflyingmod = new Vector(1, 1, 1);
@@ -73,70 +57,71 @@ public class Minecart_speedplusVehicleListener implements Listener {
 			return;
 		}
 
-		Block b = fromBlockLocation.getBlock();
-
-
-
 		final double travelled = to.toVector().distance(from.toVector());
 
 		if (travelled > 1) {
 			plugin.getLogger().warning(String.format("Moved more than 1 block since last time (%f)", travelled));
 		}
-		plugin.getLogger().info(from.toString());
-		plugin.getLogger().info(to.toString());
-		plugin.getLogger().info(fromBlockLocation.toString());
-		plugin.getLogger().info(toBlockLocation.toString());
-
-		final Vector direction = from.toVector().subtract(to.toVector()).normalize();
-		final int blockDistance = (int) Math.ceil(toBlockLocation.toVector().distance(fromBlockLocation.toVector()));
-		plugin.getLogger().info(Integer.toString(blockDistance));
-		plugin.getLogger().info(direction.toString());
-
-		Location fcopy = from.clone().setDirection(direction);
-		plugin.getLogger().info(fcopy.toString());
-
-		int maxDistance = Math.max(Math.min(blockDistance, 20), 1);
-		plugin.getLogger().info(Integer.toString(maxDistance));
-
-		BlockIterator bi = new BlockIterator(from.getWorld(), fromBlockLocation.toVector(), direction, 0.0D, 3);
 
 		final Minecart cart = (Minecart) event.getVehicle();
-		plugin.getLogger().info(cart.getVelocity().toString());
-		int j = 0;
 
-		for (Location location = bi.next().getLocation(); bi.hasNext();) {
-			if (j++ >= 20) {
-				plugin.getLogger().warning("Infinite loop detected");
-				break;
-			}
-			plugin.getLogger().info(location.toString());
+		final Location location = fromBlockLocation.clone();
 
-			if (location.equals(fromBlockLocation)) {
-				// Could probably do some vector magic above to avoid this
-				continue;
-			}
-			StringBuilder sb = new StringBuilder("Materials: ");
-			for (int i = 1; i <= 3; i++) {
-				Block below = location.subtract(0, i, 0).getBlock();
-				sb.append(below.getType().toString());
-				sb.append(", ");
-				if (below.getState() instanceof Sign sign) {
-					if (sign.getPersistentDataContainer().has(plugin.key_speed, PersistentDataType.DOUBLE)) {
-						double speed = sign.getPersistentDataContainer().get(plugin.key_speed,
-								PersistentDataType.DOUBLE);
-						cart.setMaxSpeed(0.4D * speed);
-					} else if (sign.getPersistentDataContainer().has(plugin.key_fly, PersistentDataType.BOOLEAN)) {
-						Boolean fly = sign.getPersistentDataContainer().get(plugin.key_fly,
-								PersistentDataType.BOOLEAN);
-						if (fly) {
-							cart.setFlyingVelocityMod(flyingmod);
-						} else {
-							cart.setFlyingVelocityMod(noflyingmod);
+		// Yes, I know this potentially screws with sign order.
+		// Deal with it, or figure out BlockIterator.
+		final int xs = Math.min(from.getBlockX(), to.getBlockX());
+		final int ys = Math.min(from.getBlockY(), to.getBlockY());
+		final int zs = Math.min(from.getBlockZ(), to.getBlockZ());
+
+		final int xl = Math.max(from.getBlockX(), to.getBlockX());
+		final int yl = Math.max(from.getBlockY(), to.getBlockY());
+		final int zl = Math.max(from.getBlockZ(), to.getBlockZ());
+
+		for (int x = xs; x <= xl; x++) {
+			for (int z = zs; z <= zl; z++) {
+				for (int y = ys; y <= yl; y++) {
+					location.setX(x);
+					location.setY(y);
+					location.setZ(z);
+
+					if (location.equals(fromBlockLocation)) {
+						// Could probably do some vector magic above to avoid this
+						continue;
+					}
+
+					StringBuilder sb = new StringBuilder("Materials: ");
+					boolean si = false;
+					for (int i = 3; i >= 2; i--) {
+						// y-0 == rail
+						// y-1 == block rail is placed on
+						location.setY(y - i);
+						Block below = location.getBlock();
+						sb.append(below.getType().toString());
+						sb.append(", ");
+						if (below.getState() instanceof Sign sign) {
+							si = true;
+							if (sign.getPersistentDataContainer().has(plugin.key_speed, PersistentDataType.DOUBLE)) {
+								double speed = sign.getPersistentDataContainer().get(plugin.key_speed,
+										PersistentDataType.DOUBLE);
+								cart.setMaxSpeed(0.4D * speed);
+							} else if (sign.getPersistentDataContainer().has(plugin.key_fly,
+									PersistentDataType.BOOLEAN)) {
+								Boolean fly = sign.getPersistentDataContainer().get(plugin.key_fly,
+										PersistentDataType.BOOLEAN);
+								if (fly) {
+									cart.setFlyingVelocityMod(flyingmod);
+								} else {
+									cart.setFlyingVelocityMod(noflyingmod);
+								}
+							}
 						}
+					}
+					if (si) {
+						// plugin.getLogger().info(location.toString());
+						plugin.getLogger().info(sb.toString());
 					}
 				}
 			}
-			plugin.getLogger().info(sb.toString());
 		}
 	}
 }

@@ -52,7 +52,7 @@ public class Minecart_speedplusSignListener implements Listener {
 				error = true;
 			}
 
-			if (error || 50 < speed || speed < 0) {
+			if (error || 100 < speed || speed < 0) {
 				e.line(1, Component.text("WRONG VALUE").color(NamedTextColor.DARK_RED));
 				return;
 			}
