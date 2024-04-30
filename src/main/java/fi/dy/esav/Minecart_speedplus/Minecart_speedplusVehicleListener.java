@@ -88,7 +88,6 @@ public class Minecart_speedplusVehicleListener implements Listener {
 		plugin.getLogger().info(toBlockLocation.toString());
 
 		final Vector direction = from.toVector().subtract(to.toVector()).normalize();
-		direction.toBlockVector();
 		final int blockDistance = (int) Math.ceil(toBlockLocation.toVector().distance(fromBlockLocation.toVector()));
 		plugin.getLogger().info(Integer.toString(blockDistance));
 		plugin.getLogger().info(direction.toString());
@@ -98,7 +97,8 @@ public class Minecart_speedplusVehicleListener implements Listener {
 
 		int maxDistance = Math.max(Math.min(blockDistance, 20), 1);
 		plugin.getLogger().info(Integer.toString(maxDistance));
-		BlockIterator bi = new BlockIterator(fcopy, 0, 3);
+
+		BlockIterator bi = new BlockIterator(from.getWorld(), fromBlockLocation.toVector(), direction, 0.0D, 3);
 
 		final Minecart cart = (Minecart) event.getVehicle();
 		plugin.getLogger().info(cart.getVelocity().toString());
