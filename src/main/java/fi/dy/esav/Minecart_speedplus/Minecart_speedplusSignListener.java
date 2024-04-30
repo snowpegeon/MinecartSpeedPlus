@@ -39,6 +39,7 @@ public class Minecart_speedplusSignListener implements Listener {
 			if (e.getBlock().getState() instanceof Sign sign) {
 				sign.getPersistentDataContainer().set(plugin.key_fly, PersistentDataType.BOOLEAN,
 						e.getLine(1).equalsIgnoreCase("fly"));
+				sign.update();
 				ok = true;
 			}
 		} else {
@@ -63,6 +64,7 @@ public class Minecart_speedplusSignListener implements Listener {
 
 			if (e.getBlock().getState() instanceof Sign sign) {
 				sign.getPersistentDataContainer().set(plugin.key_speed, PersistentDataType.DOUBLE, speed);
+				sign.update();
 				ok = true;
 			}
 		}
