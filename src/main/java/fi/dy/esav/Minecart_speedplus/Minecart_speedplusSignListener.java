@@ -45,6 +45,11 @@ public class Minecart_speedplusSignListener implements Listener {
 				ok = true;
 			}
 		} else {
+			if (!(e.getPlayer().hasPermission("msp.signs.speed"))) {
+				e.line(0, Component.text("NO PERMS").color(NamedTextColor.DARK_RED));
+				return;
+			}
+
 			boolean error = false;
 			double speed = -1;
 
@@ -53,16 +58,20 @@ public class Minecart_speedplusSignListener implements Listener {
 			} catch (Exception ex) {
 				error = true;
 			}
-
-			if (!(e.getPlayer().hasPermission("msp.signs.speed"))) {
-				e.line(0, Component.text("NO PERMS").color(NamedTextColor.DARK_RED));
+			if (error || Double.isNaN(speed)) {
+				e.line(1, Component.text("E: NaN").color(NamedTextColor.DARK_RED));
 				return;
 			}
 
-			if (error || 100 < speed || speed < 0) {
-				e.line(1, Component.text("WRONG VALUE").color(NamedTextColor.DARK_RED));
+			if (100 < speed) {
+				e.line(1, Component.text("E: <=100").color(NamedTextColor.DARK_RED));
+				return;
+			} else if (speed <= 0) {
+				e.line(1, Component.text("E: >0").color(NamedTextColor.DARK_RED));
 				return;
 			}
+
+			e.line(1, Component.text(line1).color(NamedTextColor.BLACK));
 
 			if (e.getBlock().getState() instanceof Sign sign) {
 				sign.getPersistentDataContainer().set(plugin.key_speed, PersistentDataType.DOUBLE, speed);
@@ -75,6 +84,8 @@ public class Minecart_speedplusSignListener implements Listener {
 			e.line(0, Component.text("[").color(NamedTextColor.DARK_GRAY)
 					.append(Component.text("msp").color(NamedTextColor.DARK_GREEN))
 					.append(Component.text("]").color(NamedTextColor.DARK_GRAY)));
+		} else {
+			e.line(0, Component.text("[msp]").color(NamedTextColor.DARK_GRAY));
 		}
 	}
 }
