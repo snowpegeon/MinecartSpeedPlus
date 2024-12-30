@@ -1,5 +1,6 @@
 package fi.dy.esav.Minecart_speedplus;
 
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
@@ -59,15 +60,15 @@ public class Minecart_speedplus extends JavaPlugin {
 			try {
 				this.multiplier = Double.parseDouble(args[0]);
 			} catch (Exception e) {
-				sender.sendMessage(ChatColor.YELLOW + "should be a number");
+				sender.sendMessage(NamedTextColor.YELLOW + "should be a number");
 				return false;
 			}
 			this.result = setSpeedMultiplier(this.multiplier);
 			if (this.result) {
-				sender.sendMessage(ChatColor.YELLOW + "multiplier for new Minecarts set to: " + this.multiplier);
+				sender.sendMessage(NamedTextColor.YELLOW + "multiplier for new Minecarts set to: " + this.multiplier);
 				return true;
 			}
-			sender.sendMessage(ChatColor.YELLOW + "can not be set to zero and must be below");
+			sender.sendMessage(NamedTextColor.YELLOW + "can not be set to zero and must be below");
 			return true;
 		}
 		return false;
